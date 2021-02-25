@@ -316,7 +316,7 @@ where
                 let image = flat.try_into_buffer().unwrap();
                 Rs2Image::Rgba8(image)
             }
-            Format::Z16 => {
+            Format::Y16 | Format::Z16 => {
                 let sample_size = mem::size_of::<u16>();
                 debug_assert_eq!(stride_in_bytes % sample_size, 0, "please report bug");
 
@@ -345,6 +345,36 @@ where
                 };
                 let image = flat.try_into_buffer().unwrap();
                 Rs2Image::Luma16(image)
+            }
+            Format::Y8 => {
+                let sample_size = mem::size_of::<u8>();
+                debug_assert_eq!(stride_in_bytes % sample_size, 0, "please report bug");
+
+                let depth_data: &[u8] =
+                    safe_transmute::transmute_many::<u8, PedanticGuard>(raw_data).unwrap();
+
+                let stride_in_samples = stride_in_bytes / sample_size;
+                debug_assert_eq!(
+                    depth_data.len(),
+                    stride_in_samples * height,
+                    "please report bug"
+                );
+                debug_assert!(width <= stride_in_samples, "please report bug");
+
+                let flat = FlatSamples {
+                    samples: depth_data,
+                    layout: SampleLayout {
+                        channels: 1,
+                        width: width as u32,
+                        height: height as u32,
+                        channel_stride: 1,
+                        width_stride: 1,
+                        height_stride: stride_in_bytes / sample_size,
+                    },
+                    color_hint: Some(ColorType::L16),
+                };
+                let image = flat.try_into_buffer().unwrap();
+                Rs2Image::Luma8(image)
             }
             _ => unreachable!("unsupported format. please report bug"),
         };

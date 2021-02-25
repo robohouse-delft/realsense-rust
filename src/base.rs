@@ -276,6 +276,7 @@ mod rs2_image {
         Bgra8(ImageBuffer<Bgra<u8>, &'a [u8]>),
         Rgb8(ImageBuffer<Rgb<u8>, &'a [u8]>),
         Rgba8(ImageBuffer<Rgba<u8>, &'a [u8]>),
+        Luma8(ImageBuffer<Luma<u8>, &'a [u8]>),
         Luma16(ImageBuffer<Luma<u16>, &'a [u16]>),
     }
 
@@ -293,6 +294,7 @@ mod rs2_image {
                 Rs2Image::Bgra8(image) => DynamicImage::ImageBgra8(image.convert()),
                 Rs2Image::Rgb8(image) => DynamicImage::ImageRgb8(image.convert()),
                 Rs2Image::Rgba8(image) => DynamicImage::ImageRgba8(image.convert()),
+                Rs2Image::Luma8(image) => DynamicImage::ImageLuma8(image.convert()),
                 Rs2Image::Luma16(image) => DynamicImage::ImageLuma16(image.convert()),
             }
         }

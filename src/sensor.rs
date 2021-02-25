@@ -153,19 +153,22 @@ where
         }
     }
 
-    // pub fn set_option(&mut self, option: Rs2Option, value: f32) -> Result<()> {
-    //     unsafe {
-    //         let mut checker = ErrorChecker::new();
-    //         let val = sys::rs2_set_option(
-    //             self.ptr.as_ptr().cast::<sys::rs2_options>(),
-    //             option as sys::rs2_option,
-    //             value,
-    //             checker.inner_mut_ptr(),
-    //         );
-    //         checker.check()?;
-    //     }
-    //     Ok(())
-    // }
+    /// Sets an attribute on sensor.
+    ///
+    /// It will return error if the attribute is not available on sensor.
+    pub fn set_option(&mut self, option: Rs2Option, value: f32) -> Result<()> {
+        unsafe {
+            let mut checker = ErrorChecker::new();
+            sys::rs2_set_option(
+                self.ptr.as_ptr().cast::<sys::rs2_options>(),
+                option as sys::rs2_option,
+                value,
+                checker.inner_mut_ptr(),
+            );
+            checker.check()?;
+        }
+        Ok(())
+    }
 
     /// List stream profiles on sensor.
     pub fn stream_profiles(&self) -> Result<StreamProfileList> {
